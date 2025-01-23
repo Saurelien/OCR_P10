@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.response import Response
-from log_app.models import UserLoginLog
 
 User = get_user_model()
 
@@ -53,12 +52,13 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 
 class CustomTokenRefreshView(TokenRefreshView):
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-
-        if response.status_code == status.HTTP_200_OK and request.user.is_authenticated:
-            user = request.user.is_authenticated
-            log_entry = UserLoginLog(user=user)
-            log_entry.save()
-
-        return response
+    pass
+#     def post(self, request, *args, **kwargs):
+#         response = super().post(request, *args, **kwargs)
+#
+#         if response.status_code == status.HTTP_200_OK and request.user.is_authenticated:
+#             user = request.user.is_authenticated
+#             log_entry = UserLoginLog(user=user)
+#             log_entry.save()
+#
+#         return response

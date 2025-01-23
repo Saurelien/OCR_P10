@@ -18,12 +18,7 @@ class ProjectAdmin(admin.ModelAdmin):
         return ", ".join([user.username for user in obj.contributors.all()])
     contributors_list.short_description = 'Contributeurs'
 
-    def has_delete_permission(self, request, obj=None):
-        # Empêcher la suppression des projets par l'administrateur
-        return False
-
     def has_view_permission(self, request, obj=None):
-        # Vérifiez si l'utilisateur est un superutilisateur
         return request.user.is_superuser
 
 
@@ -40,7 +35,7 @@ class CommentAdmin(admin.ModelAdmin):
     search_fields = ('author__username', 'issue__title', 'description')
 
 
-# Enregistrez la classe personnalisée dans l'administration
+# appelé les classes personnalisées dans l'administration et les classes models de l'app
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Issue)
 admin.site.register(Comment, CommentAdmin)

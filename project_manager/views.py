@@ -21,7 +21,7 @@ class ProjectViewSet(MultipleSerializerMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsProjectAuthor]
 
     def get_queryset(self):
-        if self.action == "join":
+        if self.action in ["join", "unjoin"]:
             return Project.objects.all()
         return self.request.user.contributed_projects.order_by("created_time")
 
@@ -41,17 +41,30 @@ class ProjectViewSet(MultipleSerializerMixin, viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def join(self, request, pk=None):
         project = self.get_object()
+        user = request.user
+        # Vérifiez si l'utilisateur est déjà contributeur du projet
+        if project.contributors.filter(id=user.id).exists():
+            return Response({'detail': f'Vous avez déjà rejoint le projet {project.title}.'
+                                       f' ID du projet {project.pk}'}, status=200)
+        # Ajouter un contributeur au projet
+        project.contributors.add(user)
+        return Response({'detail': 'Inscription réussie au projet.'}, status=200)
+
+    @action(detail=True, methods=['post'])
+    def unjoin(self, request, pk=None):
+        project = self.get_object()
         user = self.request.user
 
         # Vérifiez si l'utilisateur est déjà contributeur du projet
         if project.contributors.filter(id=user.id).exists():
-            # L'utilisateur est déjà contributeur du projet
-            return Response({'message': f'Vous avez déjà rejoint le projet {project.title} ID: {project.pk}.'},
+            # Retirer le contributeur du projet
+            project.contributors.remove(user)
+            return Response({'message': f'Vous vous êtes retiré du projet {project.title} ID: {project.pk}.'},
                             status=200)
-
-        # Ajoutez l'utilisateur en tant que contributeur
-        project.contributors.add(user)
-        return Response({'message': 'Inscription au projet réussie.'}, status=200)
+        # Renvoyer un message indiquant qu'il n'est pas contributeur.
+        return Response({'message': f'Vous n\'êtes pas actuellement contributeur du projet {project.title}'
+                                    f' ID: {project.pk}.'},
+                        status=200)
 
 
 class ProjectJSONView(View):
@@ -95,7 +108,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Comment.objects.filter(author=user)
+        return Comment.objects.filter(issue__assignee=user, issue__pk=self.kwargs["issue_pk"])
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        issue = Issue.objects.get(pk=self.kwargs["issue_pk"])
+        serializer.save(author=self.request.user, issue=issue)

@@ -68,6 +68,11 @@ class Issue(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ("?",)
+        verbose_name = "ticket"
+        verbose_name_plural = "tickets"
+
 
 class Comment(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='authored_comment')
@@ -77,5 +82,3 @@ class Comment(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f'Commentaire du problème: {self.issue.title}'

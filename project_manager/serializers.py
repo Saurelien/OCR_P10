@@ -9,6 +9,12 @@ class UserDetailSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'age', 'can_be_contacted', 'can_data_be_shared')
 
 
+class UserLiteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username')
+
+
 class ProjectDetailSerializer(serializers.ModelSerializer):
     contributors = serializers.SerializerMethodField()
 
@@ -52,16 +58,32 @@ class IssueSerializer(serializers.ModelSerializer):
 
         return self.context['request'].user
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["author"] = UserLiteSerializer(instance.author).data
+
+        return representation
+
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ('id', 'author', 'description', 'issue', 'created_time', 'updated_time')
+        fields = ('uid', 'pk', 'description', 'created_time', 'updated_time')
 
-    def validate_issue(self, value):
+    def validate(self, data):
         user = self.context['request'].user
-        project = value.project
-        if not project.contributors.filter(id=user.id).exists():
-            raise serializers.ValidationError('Vous n\'êtes pas autorisé à répondre à cette issue.')
+        issue_pk = self.context['view'].kwargs['issue_pk']
 
-        return value
+        # Vérification si l'utilisateur est assigné à l'issue
+        issue = Issue.objects.get(pk=issue_pk)
+        if issue.assignee != user:
+            raise serializers.ValidationError("Vous n'êtes pas autorisé à commenter cette issue.")
+
+        return data
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["author"] = UserLiteSerializer(instance.author).data
+
+        return representation
+

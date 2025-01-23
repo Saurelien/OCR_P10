@@ -44,8 +44,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'user_auth',
     'project_manager',
-    'log_app',
-    'libs'
+    'libs',
+    'django_extensions'
 ]
 
 REST_FRAMEWORK = {
@@ -156,21 +156,3 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'login_log_file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': 'login_log.log',  # Emplacement du fichier journal
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['login_log_file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-    },
-}

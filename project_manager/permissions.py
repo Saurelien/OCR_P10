@@ -8,12 +8,19 @@ class IsProjectAuthor(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
+
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests.
         if request.method in permissions.SAFE_METHODS:
             return True
+
+        # Exclure l'action "join" de la vérification de l'auteur
         if view.action in ["join", "unjoin"]:
             return True
+
+        if view.action == "destroy":
+            return obj.author == request.user
+
         # Instance must have an attribute named `owner`.
         return obj.author == request.user
 
@@ -29,9 +36,11 @@ class IsIssueCreator(permissions.BasePermission):
         return request.user.contributed_projects.filter(pk=view.kwargs["project_pk"]).exists()
 
     def has_object_permission(self, request, view, obj):
+        print(f"Issue author: {obj.author}, User: {request.user}")
         return obj.author == request.user
 
 
 class IsCommentAuthor(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
+        print(f"Comment author: {obj.author}, User: {request.user}")
         return obj.author == request.user
