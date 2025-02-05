@@ -1,8 +1,8 @@
 from django.http import JsonResponse
 from django.views import View
+from rest_framework.generics import get_object_or_404
 from project_manager.serializers import ProjectSerializer, IssueSerializer, ProjectDetailSerializer, CommentSerializer
 from django.contrib.auth import get_user_model
-from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -68,24 +68,8 @@ class ProjectViewSet(MultipleSerializerMixin, viewsets.ModelViewSet):
 
 
 class ProjectJSONView(View):
-    def get(self, request, pk):
-        try:
-            project = Project.objects.get(pk=pk)
-            # Obtenez la liste des noms d'utilisateur des contributeurs
-            contributor_usernames = [contributor.username for contributor in project.contributors.all()]
-            project_data = {
-                'id': project.id,
-                'title': project.title,
-                'description': project.description,
-                'type': project.type,
-                'author': project.author.username,
-                'contributors': contributor_usernames,
-                'created_time': project.created_time.astimezone(timezone.get_current_timezone())
-                .strftime("%d-%m-%Y %H:%M"),
-            }
-            return JsonResponse(project_data)
-        except Project.DoesNotExist:
-            return JsonResponse({'error': 'Projet non trouvé'}, status=404)
+    serializer_class = ProjectDetailSerializer
+    queryset = Project.objects.all()
 
 
 class IssueViewSet(viewsets.ModelViewSet):
@@ -107,8 +91,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsCommentAuthor]
 
     def get_queryset(self):
-        user = self.request.user
-        return Comment.objects.filter(issue__assignee=user, issue__pk=self.kwargs["issue_pk"])
+        return Comment.objects.filter(issue_id=self.kwargs["issue_pk"], issue__project_id=self.kwargs["project_pk"])
 
     def perform_create(self, serializer):
         issue = Issue.objects.get(pk=self.kwargs["issue_pk"])

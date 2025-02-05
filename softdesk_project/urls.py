@@ -16,8 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-# from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
-from user_auth.views import UserRegistrationView, UserDeleteView, CustomTokenObtainPairView, CustomTokenRefreshView
+from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
+from user_auth.views import UserRegistrationView, UserDeleteView
 from project_manager.views import ProjectJSONView
 from rest_framework_nested import routers
 from project_manager.views import ProjectViewSet, IssueViewSet, CommentViewSet
@@ -35,8 +35,8 @@ router_issue.register(r'comment', CommentViewSet, basename="comment")
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user_auth/register/', UserRegistrationView.as_view(), name='register-user'),
-    path('user_auth/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('user_auth/token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
+    path('user_auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('user_auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('user/delete/', UserDeleteView.as_view(), name='user-delete'),
     path('project/<int:pk>/view_as_json/', ProjectJSONView.as_view(), name='project-json'),
     path('api/', include(router.urls)),

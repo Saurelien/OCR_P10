@@ -1,38 +1,18 @@
-# Fichiers et dossiers Python
 __pycache__/
 
-# Environnements virtuels
 .venv/
 env/
 venv/
 ENV/
 
-# Poetry
 poetry.lock
 *.toml
 
-# Dossier de caches et d'artefacts
-*.log
-*.pot
-*.pyc
-*.pyo
-*.pyd
-*.db
-*.sqlite
-*.db-shm
-*.db-wal
-
-# Dossiers de cache des IDEs
 .idea/
 .vscode/
 
-# Fichiers générés par Sphinx pour la documentation
-docs/_build/
-
-# Fichiers de test
 .coverage
 *.cover
 *.py,cover
 
-# Ignorer toutes les migrations Django
 */migrations/

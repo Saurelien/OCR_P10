@@ -16,15 +16,20 @@ class UserLiteSerializer(serializers.ModelSerializer):
 
 
 class ProjectDetailSerializer(serializers.ModelSerializer):
-    contributors = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
+    nb_contributors = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
-        fields = ('pk', 'title', 'description', 'type', 'contributors', 'created_time', 'updated_time')
+        fields = ('pk', 'title', 'description', 'type', 'author', 'nb_contributors', 'created_time', 'updated_time')
 
-    def get_contributors(self, obj):
-        # Renvoye une liste des noms d'utilisateur des contributeurs
-        return UserDetailSerializer(obj.contributors.all(), many=True).data
+    def get_author(self, obj):
+        # réutiliser une classe qui récupère les info d'un contributeur auteur
+        return UserLiteSerializer(obj.author).data
+
+    def get_nb_contributors(self, obj):
+        return obj.contributors.count()
+
 
 
 class ProjectSerializer(serializers.ModelSerializer):

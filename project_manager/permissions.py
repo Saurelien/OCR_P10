@@ -9,8 +9,6 @@ class IsProjectAuthor(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
 
-        # Read permissions are allowed to any request,
-        # so we'll always allow GET, HEAD or OPTIONS requests.
         if request.method in permissions.SAFE_METHODS:
             return True
 
@@ -21,7 +19,6 @@ class IsProjectAuthor(permissions.BasePermission):
         if view.action == "destroy":
             return obj.author == request.user
 
-        # Instance must have an attribute named `owner`.
         return obj.author == request.user
 
 

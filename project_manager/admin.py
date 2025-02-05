@@ -35,7 +35,6 @@ class CommentAdmin(admin.ModelAdmin):
     search_fields = ('author__username', 'issue__title', 'description')
 
 
-# appelé les classes personnalisées dans l'administration et les classes models de l'app
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Issue)
 admin.site.register(Comment, CommentAdmin)
