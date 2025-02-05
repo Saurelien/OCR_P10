@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "ocp10"
+version = "0.1.0"
+description = ""
+authors = ["Saurelien <aurelienschmitt.info@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+django = "4.2.5"
+djangorestframework = "3.14.0"
+djangorestframework-jwt = "1.11.0"
+djangorestframework-simplejwt = "5.3.0"
+pyjwt = "1.7.1"
+drf-nested-routers = "0.93.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -5,8 +5,6 @@ env/
 venv/
 ENV/
 
-poetry.lock
-*.toml
 
 .idea/
 .vscode/
